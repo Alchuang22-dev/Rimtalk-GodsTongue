@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+    <GameVersion Condition=" '$(GameVersion)' == '' ">1.6</GameVersion>
+    <TargetFramework>net48</TargetFramework>
+    <RootNamespace>RimTalk_GodsTongue</RootNamespace>
+    <AssemblyName>RimTalk_GodsTongue</AssemblyName>
+    <OutputPath>$(GameVersion)/Assemblies</OutputPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+    <PackageReference Include="Krafs.Rimworld.Ref" Version="$(GameVersion).*-*" PrivateAssets="All" />
+    <PackageReference Include="Lib.Harmony.Ref" Version="2.*" PrivateAssets="All"/>
+    </ItemGroup>
+
+    <ItemGroup>
+    <!-- 引用 RimTalk 主 DLL，路径按你真实 RimTalk 目录改 -->
+    <Reference Include="RimTalk">
+      <!-- 假设 RimTalk 放在 Mods/RimTalk/Assemblies/1.6/RimTalk.dll -->
+      <HintPath>..\..\RimTalk\1.6\Assemblies\RimTalk.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    </ItemGroup>
+</Project>
