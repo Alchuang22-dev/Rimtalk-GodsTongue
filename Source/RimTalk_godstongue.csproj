@@ -1,23 +1,71 @@
 <Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
+
+  <!--
+    RimTalk Experimental / Add-on Patch Project
+    - Put experimental / rejected / unbalanced features here for optional use.
+    - Keep RimTalk core lean; this mod owns all patches.
+    - Build:
+        dotnet build -p:GameVersion=1.6
+      Output:
+        <ProjectDir>\1.6\Assemblies\<AssemblyName>.dll
+  -->
+
+  <PropertyGroup>
+    <!-- Defaults -->
     <GameVersion Condition=" '$(GameVersion)' == '' ">1.6</GameVersion>
+
     <TargetFramework>net48</TargetFramework>
-    <RootNamespace>RimTalk_GodsTongue</RootNamespace>
-    <AssemblyName>RimTalk_GodsTongue</AssemblyName>
-    <OutputPath>$(GameVersion)/Assemblies</OutputPath>
-    </PropertyGroup>
 
-    <ItemGroup>
+    <!-- Use a generic name since this mod will host multiple features -->
+    <RootNamespace>RimTalk_ExperimentalPatches</RootNamespace>
+    <AssemblyName>RimTalk_ExperimentalPatches</AssemblyName>
+
+    <!-- RimWorld mod layout: put DLL directly under <GameVersion>/Assemblies -->
+    <OutputPath>$(GameVersion)\Assemblies\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+
+    <!-- VSCode/OmniSharp: do not fall back to C# 7.3 -->
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+
+    <!-- Mod assemblies: keep outputs clean -->
+    <DebugType>portable</DebugType>
+    <Deterministic>true</Deterministic>
+
+    <!-- Make it easier to evolve this patch pack without blocking builds -->
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <!-- Optional version defines for conditional compilation -->
+  <PropertyGroup Condition=" '$(GameVersion)' == '1.5' ">
+    <DefineConstants>$(DefineConstants);V1_5</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(GameVersion)' == '1.6' ">
+    <DefineConstants>$(DefineConstants);V1_6</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Reference pack for RimWorld types -->
     <PackageReference Include="Krafs.Rimworld.Ref" Version="$(GameVersion).*-*" PrivateAssets="All" />
-    <PackageReference Include="Lib.Harmony.Ref" Version="2.*" PrivateAssets="All"/>
-    </ItemGroup>
+    <!-- Harmony reference -->
+    <PackageReference Include="Lib.Harmony.Ref" Version="2.*" PrivateAssets="All" />
+  </ItemGroup>
 
-    <ItemGroup>
-    <!-- 引用 RimTalk 主 DLL，路径按你真实 RimTalk 目录改 -->
+  <!-- RimTalk core reference: configurable location -->
+  <PropertyGroup>
+    <!-- You can override this in command line: -p:RimTalkDir=... -->
+    <RimTalkDir Condition=" '$(RimTalkDir)' == '' ">..\..\RimTalk</RimTalkDir>
+  </PropertyGroup>
+
+  <ItemGroup>
     <Reference Include="RimTalk">
-      <!-- 假设 RimTalk 放在 Mods/RimTalk/Assemblies/1.6/RimTalk.dll -->
-      <HintPath>..\..\RimTalk\1.6\Assemblies\RimTalk.dll</HintPath>
+      <!-- Expected layout: ..\..\RimTalk\<GameVersion>\Assemblies\RimTalk.dll -->
+      <HintPath>$(RimTalkDir)\$(GameVersion)\Assemblies\RimTalk.dll</HintPath>
+      <!-- Do not copy RimTalk.dll into this mod's Assemblies -->
       <Private>false</Private>
     </Reference>
-    </ItemGroup>
+  </ItemGroup>
+
 </Project>
